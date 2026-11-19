@@ -97,8 +97,7 @@ function renderCourse() {
   });
 
   $("index").replaceChildren(...rows.map((r) => r.li));
-  const next = rows.find((r) => r.boxes.some((b) => !b.checked));
-  rows.forEach((r) => setOpen(r, r === next));
+  rows.forEach((r) => setOpen(r, false));
   update(false);
 }
 
