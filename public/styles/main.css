@@ -102,12 +102,12 @@ h1 { font-size: 1.5rem; line-height: 1.2; font-weight: 700; letter-spacing: -0.0
 
 /* Side banners */
 .banners { display: none; }
-@media (min-width: 82rem) {
-  body { background: var(--cover); }
-  main.wrap, .foot.wrap { width: 62rem; padding-inline: 2rem; background: var(--paper); }
+@media (min-width: 60rem) {
+  body { background: var(--cover); --sheet: min(62rem, calc(100% - 20rem)); }
+  main.wrap, .foot.wrap { width: var(--sheet); padding-inline: 2rem; background: var(--paper); }
   .banners { display: block; position: sticky; top: 0; height: 0; z-index: -1; pointer-events: none; }
   .banner {
-    position: absolute; top: 0; width: calc((100vw - 62rem) / 2); height: 100vh; overflow: hidden;
+    position: absolute; top: 0; width: calc((100% - var(--sheet)) / 2); height: 100vh; overflow: hidden;
     -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 98%), linear-gradient(var(--fade), #000 50%, transparent 98%);
     mask-image: linear-gradient(to bottom, #000 60%, transparent 98%), linear-gradient(var(--fade), #000 50%, transparent 98%);
     -webkit-mask-composite: source-in;
