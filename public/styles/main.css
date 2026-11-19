@@ -57,6 +57,7 @@ body {
 
 /* Cover */
 .cover { background: var(--cover); color: var(--paper); padding: 1.25rem 0 1rem; }
+.cover .wrap { width: calc(100% - 3rem); }
 .cover-side { display: flex; align-items: center; gap: 1rem; flex: none; max-width: 100%; }
 .course-change {
   font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--cover-soft);
@@ -197,6 +198,7 @@ main { padding: 1.5rem 0 1rem; }
 @media (max-width: 40rem) {
   :root { --col-no: 4.25rem; }
   .wrap { width: min(100% - 2rem, 58rem); }
+  .cover .wrap { width: calc(100% - 2rem); }
   .cover { padding: 1.5rem 0 1.25rem; }
   .cover-top { flex-direction: column; gap: 1rem; }
   h1 { font-size: 1.5rem; }
