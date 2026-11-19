@@ -1,0 +1,12 @@
+.git
+.gitignore
+.impeccable
+.vercel
+DESIGN.md
+PRODUCT.md
+README.md
+scripts
+node_modules
+*.log
+.DS_Store
+Thumbs.db

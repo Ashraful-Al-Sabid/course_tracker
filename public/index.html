@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Course tracker</title>
+  <meta name="description" content="Per-class topic checklist and progress tracker for university courses.">
+  <meta name="theme-color" content="#1f3a6b">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/public-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <header class="cover">
+    <div class="wrap">
+      <div class="cover-top">
+        <div>
+          <h1 id="course-title"></h1>
+          <p class="meta" id="course-meta"></p>
+        </div>
+        <div class="cover-side">
+          <p class="complete" id="complete" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><strong>Course complete</strong><span id="complete-date"></span></span>
+          </p>
+          <div class="courses" id="courses" hidden>
+            <button type="button" class="course-change" id="course-change">Change course</button>
+            <div id="course-picker" hidden>
+              <label class="sr-only" for="course-select">Course</label>
+              <select id="course-select"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="progress">
+        <div class="bar" id="bar" role="progressbar" aria-labelledby="course-title" aria-valuemin="0"><span class="fill" id="fill"></span></div>
+        <p class="progress-text" aria-live="polite"><span id="count"></span><span id="pct"></span></p>
+      </div>
+    </div>
+  </header>
+
+  <div class="banners" aria-hidden="true">
+    <div class="banner banner-left"><img src="/assets/banner-left.jpg" alt="" width="576" height="1024" decoding="async"></div>
+    <div class="banner banner-right"><img src="/assets/banner-right.jpg" alt="" width="576" height="1024" decoding="async"></div>
+  </div>
+
+  <main class="wrap">
+    <noscript><p class="notice">This page needs JavaScript turned on to show your courses and save your ticks.</p></noscript>
+    <div class="index-head" aria-hidden="true">
+      <span>No.</span><span>Class and topics</span><span class="num">Done</span><span>Signed off</span>
+    </div>
+    <ol class="index" id="index"></ol>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Topics follow the official course outline. Ticks are saved in this browser only.</p>
+    <div class="reset" id="reset">
+      <button type="button" class="btn" id="reset-ask">Reset progress</button>
+      <span class="reset-confirm" id="reset-confirm" hidden>
+        Clear every tick for this course?
+        <button type="button" class="btn btn-danger" id="reset-yes">Clear ticks</button>
+        <button type="button" class="btn" id="reset-no">Keep them</button>
+      </span>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
