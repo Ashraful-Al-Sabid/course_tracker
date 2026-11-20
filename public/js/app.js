@@ -4,7 +4,15 @@ const KEY = "course-tracker:v1";
 const courses = Array.isArray(COURSES) ? COURSES : [];
 const $ = (id) => document.getElementById(id);
 const CHEVRON = '<svg class="chev" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const CHECK = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const RING_C = 2 * Math.PI * 8.5;
+const STATUS_HTML =
+  '<svg class="status-ring" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+    '<circle class="status-bg" cx="12" cy="12" r="8.5"/>' +
+    '<circle class="status-arc" cx="12" cy="12" r="8.5"/>' +
+  '</svg>' +
+  '<svg class="status-tick" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">' +
+    '<path d="M4.5 12.5l5 5L19.5 6.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '</svg>';
 
 let store = {};
 try { store = JSON.parse(localStorage.getItem(KEY)) || {}; } catch {}
@@ -68,11 +76,19 @@ function renderCourse() {
     const label = cls.label || course.unit + " " + ++no;
     const items = cls.items.map(itemOf);
     const count = el("span", { className: "lab-count num" });
-    const sign = el("span", { className: "lab-sign" });
+    const status = el("span", { className: "lab-status" });
+    status.innerHTML = STATUS_HTML;
+    const statusSr = el("span", { className: "sr-only" });
+    status.append(statusSr);
+    const statusRing = status.querySelector(".status-ring");
+    const statusArc = status.querySelector(".status-arc");
+    const statusTick = status.querySelector(".status-tick");
+    statusArc.style.strokeDasharray = RING_C.toFixed(2);
+    statusArc.style.strokeDashoffset = RING_C.toFixed(2);
     const toggle = el("button", { type: "button", className: "lab-toggle" },
       el("span", { className: "lab-no", textContent: label }),
       el("span", { className: "lab-title" }, el("span", { textContent: cls.title })),
-      count, sign);
+      count, status);
     toggle.querySelector(".lab-title").insertAdjacentHTML("afterbegin", CHEVRON);
     toggle.setAttribute("aria-controls", id + "-panel");
 
@@ -91,7 +107,7 @@ function renderCourse() {
         ...(it.kind ? [el("span", { className: "tag", textContent: it.kind })] : [])))));
     const panel = el("div", { className: "lab-panel", id: id + "-panel" }, list);
     const li = el("li", { className: "lab" }, el("h2", {}, toggle), panel);
-    const row = { id, li, toggle, panel, boxes, count, sign };
+    const row = { id, li, toggle, panel, boxes, count, status, statusRing, statusArc, statusTick, statusSr };
     toggle.addEventListener("click", () => setOpen(row, panel.hidden));
     return row;
   });
@@ -112,21 +128,26 @@ function update(animate) {
   let done = 0, total = 0;
   rows.forEach((r) => {
     const n = r.boxes.filter((b) => b.checked).length;
-    done += n; total += r.boxes.length;
-    r.count.textContent = n + " / " + r.boxes.length;
-    const full = n === r.boxes.length;
+    const itemCount = r.boxes.length;
+    done += n; total += itemCount;
+    r.count.textContent = n + " / " + itemCount;
+    const full = itemCount > 0 && n === itemCount;
     r.li.classList.toggle("is-done", full);
     if (full && !st.signed[r.id]) {
       st.signed[r.id] = new Date().toISOString();
-      r.sign.classList.toggle("is-new", animate);
+      r.statusTick.classList.toggle("is-new", animate);
     } else if (!full) {
       delete st.signed[r.id];
-      r.sign.classList.remove("is-new");
+      r.statusTick.classList.remove("is-new");
     }
-    if (st.signed[r.id]) {
-      r.sign.innerHTML = CHECK;
-      r.sign.append(el("span", { className: "sr-only", textContent: "Signed off" }));
-    } else r.sign.replaceChildren();
+    if (full) {
+      r.statusSr.textContent = "Complete";
+    } else {
+      const ratio = itemCount ? n / itemCount : 0;
+      r.statusRing.classList.toggle("is-progress", n > 0);
+      r.statusArc.style.strokeDashoffset = (RING_C * (1 - ratio)).toFixed(2);
+      r.statusSr.textContent = n > 0 ? n + " of " + itemCount + " done" : "Not started";
+    }
   });
 
   const complete = total > 0 && done === total;
