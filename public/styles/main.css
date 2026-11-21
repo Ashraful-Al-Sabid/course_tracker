@@ -28,6 +28,10 @@
   --pen: #2447b8;
   --margin: #d2453d;
   --margin-ink: #b3302a;
+  --due-bg: #fef7d6;
+  --due-bg-hover: #fcefbd;
+  --done-bg: #e7f6ec;
+  --done-bg-hover: #d8efdf;
   --col-no: 4.5rem;
   --col-done: 4.5rem;
   --col-status: 4.5rem;
@@ -138,19 +142,26 @@ main { padding: 1.5rem 0 1rem; }
 .index { list-style: none; padding: 0; position: relative; }
 .index::before {
   content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--col-no) + 0.5rem);
-  width: 2px; background: var(--margin); pointer-events: none;
+  width: 2px; background: var(--margin); pointer-events: none; z-index: 1;
 }
 .lab { border-bottom: 1px solid var(--rule); }
 .lab h2 { font-size: 1rem; font-weight: 400; }
 .lab-toggle {
   width: 100%; padding: 0.875rem 0; align-items: baseline;
   font: inherit; color: inherit; text-align: left; background: none; border: 0; cursor: pointer;
-  transition: background-color 150ms;
+  transition: background-color 200ms var(--ease);
 }
 .lab-toggle:hover { background: var(--paper-tint); }
 .lab-toggle:active { background: #e3e9f8; }
 .is-open > h2 .lab-toggle { background: var(--paper-tint); }
-.lab-no { font-weight: 600; white-space: nowrap; }
+.lab.is-due > h2 .lab-toggle { background: var(--due-bg); }
+.lab.is-due > h2 .lab-toggle:hover,
+.lab.is-due.is-open > h2 .lab-toggle { background: var(--due-bg-hover); }
+.lab.is-done > h2 .lab-toggle { background: var(--done-bg); }
+.lab.is-done > h2 .lab-toggle:hover,
+.lab.is-done.is-open > h2 .lab-toggle { background: var(--done-bg-hover); }
+.lab-no { display: flex; flex-direction: column; font-weight: 600; white-space: nowrap; }
+.lab-date { font-size: 0.75rem; font-weight: 400; color: var(--ink-soft); line-height: 1.25; margin-top: 0.125rem; white-space: normal; }
 .lab-title { display: flex; gap: 0.375rem; align-items: baseline; }
 .is-open .lab-title { font-weight: 600; }
 .chev { flex: none; align-self: flex-start; margin-top: 0.1875rem; color: var(--ink-soft); transition: transform 180ms var(--ease); }
@@ -238,6 +249,7 @@ main { padding: 1.5rem 0 1rem; }
   .index-head { font-size: 0.75rem; }
   .lab-toggle { padding: 0.75rem 0; font-size: 0.9375rem; }
   .lab-no, .lab-count { font-size: 0.875rem; }
+  .lab-date { font-size: 0.6875rem; }
   .chev { margin-top: 0.125rem; }
   .lab-status { margin-top: 0.0625rem; }
   .index::before { left: calc(var(--col-no) + 0.25rem); }

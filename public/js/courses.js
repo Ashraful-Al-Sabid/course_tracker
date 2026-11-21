@@ -7,6 +7,7 @@ export const COURSES = [
     section: "Section C, E",
     instructor: "Md. Golam Hossain",
     unit: "Lab",
+    schedule: { term: "Fall 2026", days: [6], start: "11:11", end: "13:40" },
     classes: [
       {
         title: "Introduction to relational databases and basic DDL",
@@ -131,6 +132,7 @@ export const COURSES = [
     section: "Section H",
     instructor: "Md. Shafqat Talukder Rakin",
     unit: "Class",
+    schedule: { term: "Fall 2026", days: [0, 3], start: "09:51", end: "11:10" },
     classes: [
       { title: "Introduction to databases and data models", items: [
         "What a database and a relational database are",
@@ -211,8 +213,11 @@ export const COURSES = [
     id: "cse4165",
     code: "CSE 4165",
     title: "Web Programming",
+    term: "Fall 2026",
+    section: "Section I",
     instructor: "Mahmudul Hasan",
     unit: "Class",
+    schedule: { term: "Fall 2026", days: [1], start: "08:30", end: "11:00" },
     classes: [
       { title: "HTML: structure and basic tags", items: [
         "HTML document structure and tags",
@@ -287,7 +292,9 @@ export const COURSES = [
     code: "EEE 2123",
     title: "Electronics",
     term: "Fall 2026",
+    section: "Section I",
     unit: "Class",
+    schedule: { term: "Fall 2026", days: [0, 3], start: "12:31", end: "13:50" },
     classes: [
       { title: "Semiconductor diodes 1", items: [
         "Semiconductor materials and physics",
@@ -380,8 +387,11 @@ export const COURSES = [
     id: "eee2124",
     code: "EEE 2124",
     title: "Electronics Laboratory",
+    term: "Fall 2026",
+    section: "Section A",
     instructor: "Imran Hossain",
     unit: "Class",
+    schedule: { term: "Fall 2026", days: [6], start: "08:30", end: "11:00" },
     classes: [
       { title: "Introduction", items: ["Introduction to the lab"] },
       { title: "Lab 1: Circuits, meters and measurements", items: [

@@ -1,4 +1,5 @@
 import { COURSES } from "./courses.js";
+import { computeCourseSchedule, isClassDue } from "./calendar.js";
 
 const KEY = "course-tracker:v1";
 const courses = Array.isArray(COURSES) ? COURSES : [];
@@ -70,10 +71,12 @@ function renderCourse() {
   $("course-meta").textContent = [course.code, course.term, course.section, course.instructor].filter(Boolean).join(" · ");
   resetConfirm(false);
 
+  const schedule = computeCourseSchedule(course);
   let no = 0;
   rows = course.classes.map((cls, ci) => {
     const id = "c" + (ci + 1);
     const label = cls.label || course.unit + " " + ++no;
+    const sched = schedule[ci];
     const items = cls.items.map(itemOf);
     const count = el("span", { className: "lab-count num" });
     const status = el("span", { className: "lab-status" });
@@ -85,10 +88,14 @@ function renderCourse() {
     const statusTick = status.querySelector(".status-tick");
     statusArc.style.strokeDasharray = RING_C.toFixed(2);
     statusArc.style.strokeDashoffset = RING_C.toFixed(2);
+    const noCell = el("span", { className: "lab-no" },
+      el("span", { textContent: label }),
+      ...(sched ? [el("span", { className: "lab-date", textContent: sched.shortLabel })] : []));
     const toggle = el("button", { type: "button", className: "lab-toggle" },
-      el("span", { className: "lab-no", textContent: label }),
+      noCell,
       el("span", { className: "lab-title" }, el("span", { textContent: cls.title })),
       count, status);
+    if (sched?.tooltip) toggle.title = sched.tooltip;
     toggle.querySelector(".lab-title").insertAdjacentHTML("afterbegin", CHEVRON);
     toggle.setAttribute("aria-controls", id + "-panel");
 
@@ -107,7 +114,7 @@ function renderCourse() {
         ...(it.kind ? [el("span", { className: "tag", textContent: it.kind })] : [])))));
     const panel = el("div", { className: "lab-panel", id: id + "-panel" }, list);
     const li = el("li", { className: "lab" }, el("h2", {}, toggle), panel);
-    const row = { id, li, toggle, panel, boxes, count, status, statusRing, statusArc, statusTick, statusSr };
+    const row = { id, sched, li, toggle, panel, boxes, count, status, statusRing, statusArc, statusTick, statusSr };
     toggle.addEventListener("click", () => setOpen(row, panel.hidden));
     return row;
   });
@@ -125,6 +132,7 @@ function setOpen(row, open) {
 
 function update(animate) {
   const st = state();
+  const now = new Date();
   let done = 0, total = 0;
   rows.forEach((r) => {
     const n = r.boxes.filter((b) => b.checked).length;
@@ -132,9 +140,11 @@ function update(animate) {
     done += n; total += itemCount;
     r.count.textContent = n + " / " + itemCount;
     const full = itemCount > 0 && n === itemCount;
+    const due = isClassDue(r.sched, now);
+    r.li.classList.toggle("is-due", due);
     r.li.classList.toggle("is-done", full);
     if (full && !st.signed[r.id]) {
-      st.signed[r.id] = new Date().toISOString();
+      st.signed[r.id] = now.toISOString();
       r.statusTick.classList.toggle("is-new", animate);
     } else if (!full) {
       delete st.signed[r.id];
@@ -146,7 +156,8 @@ function update(animate) {
       const ratio = itemCount ? n / itemCount : 0;
       r.statusRing.classList.toggle("is-progress", n > 0);
       r.statusArc.style.strokeDashoffset = (RING_C * (1 - ratio)).toFixed(2);
-      r.statusSr.textContent = n > 0 ? n + " of " + itemCount + " done" : "Not started";
+      const base = n > 0 ? n + " of " + itemCount + " done" : "Not started";
+      r.statusSr.textContent = due ? base + ", scheduled to finish" : base;
     }
   });
 
@@ -209,6 +220,19 @@ function pick() {
   renderCourse();
 }
 
+function refreshDueStates() {
+  if (!rows) return;
+  const now = new Date();
+  rows.forEach((r) => {
+    const due = isClassDue(r.sched, now);
+    r.li.classList.toggle("is-due", due);
+  });
+}
+
 window.addEventListener("popstate", pick);
 window.addEventListener("hashchange", pick);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshDueStates();
+});
+setInterval(refreshDueStates, 60_000);
 pick();
